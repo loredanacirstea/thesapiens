@@ -9,9 +9,15 @@ License
 Data
 ----
 
-<a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+ODbL : http://opendatacommons.org/licenses/odbl/
+
+DbCL : http://opendatacommons.org/licenses/dbcl/1-0/
+
+Also check the Licenses folder for full text.
 
 Code
 ----
 
 GPL v3 https://www.gnu.org/copyleft/gpl.html
+
+Also check the Licenses folder for full text.
