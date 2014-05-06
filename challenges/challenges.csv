@@ -1,0 +1,6 @@
+id,parent_id,title,text,type,challenge_url,initial_hints,skills,level,individual_deadline,hint1,group deadline,hint2,hard_deadline
+1,0,zoom placement,Make the placemarks retain their placement upon zoom. The only file that should be changed is the html file.,programming,http://thesapiens.ro/labs/visual_refs.html,Inspect the given url ; Use Fabricjs documentation from: http://fabricjs.com/docs/ and other sources.,javascript ; geometry,intermediate,5/8/2014,,5/10/2014,,5/12/2014
+2,1,object oriented,Make the code object oriented,programming,http://thesapiens.ro/labs/visual_refs.html,use stackjs: http://stackjs.org/,javascript ; OOP,easy,5/8/2014,,5/10/2014,,5/12/2014
+3,0,PR approach,"Think about a PR (Public Relations) approach/concept for the Education Project, targeting all high school students for volunteering. You can come up with your own new ideas.",pr,,,market targeting,intermediate,5/8/2014,,5/10/2014,,5/12/2014
+4,0,meeting agreement,Lead your peers to an agreement about a meeting date and time.,leadership,,,,easy,5/8/2014,,5/10/2014,,5/12/2014
+5,0,design PR campaign,"Make designs for any of the following: posters, stickers, flyers, or just for the project's concept. Project name: Sapiens Education.",design,,,svg ; marketing,intermediate,5/8/2014,,5/10/2014,,5/12/2014
