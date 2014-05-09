@@ -1,0 +1,825 @@
+
+<html>
+<head>
+ 
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style type="text/css">
+
+html, body {
+  padding: 0px;
+  margin: 0px;
+  overflow: hidden;
+}
+#c {
+  width: 600px;
+  height: 400px;
+}
+
+#include {
+  position: absolute;
+  width:300;
+  height:200;
+  top:3000;
+  left:0;
+  box-shadow: 3px 3px 3px #bbb;
+  z-index: 10000;
+
+}
+
+#textfield {
+  position: absolute;
+  width:300;
+  height:200;
+  top:2500;
+  left:100;
+}
+
+iframe {
+   overflow: hidden;
+   
+}
+
+
+
+/* Let's get this party started */
+::-webkit-scrollbar {
+    width: 2px;
+}
+ 
+/* Track */
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    background: rgba(100,100,100,0.8); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}
+::-webkit-scrollbar-thumb:window-inactive {
+  background: rgba(100,100,100,0.4); 
+}
+
+  </style>
+
+<script src="vendor/jquery-2.0.3.min.js"></script> 
+<script type="text/javascript" src="vendor/fabric.min.js"></script>
+
+
+<script type="text/javascript" src="vendor/fabric.min.js"></script>
+
+
+<script type="text/javascript" src="smpg/smpg_graffle.js"></script>
+
+
+
+
+<script type="text/javascript">
+
+
+window.onresize = function(event) {
+  canvas.setDimensions({width: document.documentElement.clientWidth,
+    height: document.documentElement.clientHeight})
+}
+
+function showQR(elid){
+  var el=document.getElementById(elid)
+  var qr=document.getElementById("qr")
+  var src = el.src
+  var imgsrc = "https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl="+src
+  qr.src = imgsrc
+
+}
+
+function showURL(url){
+
+}
+
+function showFormula(formString){
+  fabric.util.loadImage('http://latex.codecogs.com/gif.latex?'+encodeURIComponent(formString), function(img) {
+  frame.setPatternFill({
+    source: img,
+    repeat: 'repeat'
+    
+  });
+  w = img.width
+  h = img.height
+  //if (img.width > 300) w=300
+  //if (img.height > 300) h=300
+  frame.set({
+    top:50,
+    left:50,
+    width: w,
+    height: h})
+  canvas.renderAll();
+});
+frame.set({
+    top:50,
+    left:50
+})
+
+canvas.add(frame)
+}
+
+function showText(text){
+  var text2 = new fabric.Text(prepareText(text,40), {
+    fontFamily: 'sans-serif',
+    fontSize: 20,
+    left: canvas.width/2,
+    top: canvas.height/2,
+    fill: color,
+    hasRotatingPoint: false,
+    lockUniScaling: true,
+    minScaleLimit: 0.4,
+    flipX: false,
+    flipY: false,
+    textAlign: "left",
+    centeredScaling: true,
+    cornerSize:30,
+    //originX: "center",
+    //originY: "center",
+    //selectable:false
+  })
+
+canvas.add(text2)
+}
+
+function get_color(){
+  str = "rgb("+Math.floor(Math.random()*200)+","+Math.floor(Math.random()*200)+","+Math.floor(Math.random()*200)+")"
+  //alert(str)
+  col =  new fabric.Color(str)
+  console.log(col)
+  return col;
+}
+
+function make_frame(text2, frame2){
+  if (frame2) canvas.remove(frame2)
+  var frame1 = new fabric.Rect({
+    top: text2.top+2,
+    left: text2.left,
+    width: text2.width+6,
+    height: text2.height+4,
+    rx:5,
+    ry:5,
+    fill: "#eee",
+    opacity: 0.5,
+    hasBorders: false,
+    hasRotatingPoint: false,
+    //lockUniScaling: true,
+    centeredScaling: true,
+    originX: "center",
+    originY: "center",
+    selectable:false
+  })
+  frame1.setShadow('3px 3px 10px rgba(0,0,0,0.3)')
+  canvas.add(frame1)
+  //frame1.sendBackwards(true)
+  frame1.sendToBack()
+  //mapimg.sendToBack()
+  return frame1;
+}
+
+function showFramedText(text){
+
+  var text2 = new fabric.IText(prepareText(text,30), {
+    fontFamily: 'sans-serif',
+    fontSize: 20,
+    left: canvas.width-200,
+    top: top1,
+    fill: "#000",
+    hasRotatingPoint: false,
+    lockUniScaling: true,
+    minScaleLimit: 0.4,
+    hasBorders: false,
+    flipX: false,
+    flipY: false,
+    textAlign: "left",
+    centeredScaling: true,
+    cornerSize:30,
+    originX: "center",
+    originY: "center",
+    //selectable:false
+  })
+
+  
+
+  top1=top1+35;
+
+  
+  var frame = make_frame(text2)
+
+  
+  canvas.add(text2)
+  text2.on("scaling", function(){
+
+    frame.scaleX=text2.scaleX
+    frame.scaleY=text2.scaleY
+  })
+
+  text2.on("moving", function(){
+//alert("texttmove")
+    frame.top=text2.top
+    frame.left=text2.left
+  })
+
+  text2.on("modified", function(){
+
+    frame.scaleX=text2.scaleX
+    frame.scaleY=text2.scaleY
+    frame.top=text2.top
+    frame.left=text2.left
+  })
+
+  text2.on("changed", function(){
+    console.log(frame)
+    text2.setCoords()
+    frame = make_frame(text2, frame)
+    frame.scaleX=text2.scaleX
+    frame.scaleY=text2.scaleY
+    choice(text2)
+  })
+
+
+  //canvas.add(group)
+  choice(text2)
+
+  return text2;
+
+}
+
+function showFramedImage(icon, alt, imgurl){
+//var img;
+fabric.Image.fromURL(imgurl, function(mapimg1) {
+  //var mapimg1 = oImg;
+  mapimg1.set({
+    selectable: true,
+    left: mapimg1.width/2,
+    top: mapimg1.height/2,
+    lockUniScaling: true,
+    centeredScaling: true,
+  lockScalingX: false,
+  lockScalingY: false,
+    originX: "center",
+    originY: "center",
+    hasBorders: false,
+  hasRotatingPoint: false
+  })
+  //alert("zoom")
+  var max=mapimg1.width;
+  if (mapimg1.height > mapimg1.width) max=mapimg1.height;
+  mapimg1.scale(50/max)
+  mapimg1.setCoords()
+  mapimg1.setShadow('3px 3px 10px rgba(0,0,0,0.3)')
+  
+  top1=top1+35;
+  canvas.add(mapimg1)
+
+  choice(mapimg1)
+
+  con[ndx1] = new Connection(canvas,mapimg1,icon,{directed:true, label:" ", stroke: "black"});
+  //con[ndx]= con[ndx-1]
+
+  canvas.add(icon);
+  icon.bringToFront()
+
+  //points = [icon]
+  //var pinit=[]
+  //pinit[icon]={top: icon.top-paper.top, left:icon.left-paper.left}
+
+//showText(desc)
+
+  update(icon, ndx1)
+  update(mapimg1, ndx1)
+  ndx2=ndx2+1;
+
+
+
+});
+
+  
+
+  
+
+  //return text2;
+
+}
+
+
+function prepareText(text, max){
+  var ar = text.split(" ")
+  if (max == undefined) max =40
+  counter = 0
+  index=0
+  ar2=[]
+  ar2[0]=""
+  for (item in ar) {
+    var cr = ar[item].split("\n")
+    var len = ar[item].length
+    if (cr.length >1) { len = cr[0].length}
+    counter = counter+len
+    if (counter < max) {
+      ar2[index] =  ar2[index] + " "+ar[item]
+    } else {
+      index = index+1
+      ar2[index] =  ar[item]
+      counter=len
+    }
+    if (cr.length >1) { counter = cr[1].length}
+
+  }
+  return ar2.join(" \n")
+}
+
+function hideQR(){
+  var qr=document.getElementById("qr")
+  qr.src = "tp.png"
+
+}
+
+
+
+
+
+function addListeners(){
+    document.getElementById('include').addEventListener('mousedown', mouseDown, false);
+    window.addEventListener('mouseup', mouseUp, false);
+}
+
+function mouseUp(){
+    window.removeEventListener('mousemove', divMove, true);
+}
+
+function mouseDown(e){
+  var div = document.getElementById('include');
+  offY= e.clientY-parseInt(div.offsetTop);
+  offX= e.clientX-parseInt(div.offsetLeft);
+ window.addEventListener('mousemove', divMove, true);
+}
+
+function divMove(e){
+    var div = document.getElementById('include');
+  div.style.position = 'absolute';
+  div.style.top = (e.clientY-offY) + 'px';
+  div.style.left = (e.clientX-offX) + 'px';
+}
+
+
+var lastTime;
+
+function enable_zoom() {
+
+  $(canvas.wrapperEl).on('mousewheel', function(e) {
+    handle_zoom(e)
+  });
+
+  $(canvas.wrapperEl).on('DOMMouseScroll', function(e) {
+    handle_zoom(e)
+  });
+
+    
+  canvas.on("mouse:down",function(evt){
+    //alert("hi")
+    if(!evt.target) return;
+    //console.log(evt.target);
+    var date = new Date();
+    var now = date.getTime();
+    evt.target.fire("mouse:down");
+    if(now - lastTime < 500){
+        //objectDoubleClickHandler(evt);
+        evt.target.fire("doubleclick");
+    }
+    lastTime = now;
+  })
+
+  canvas.on("text:changed",function(evt){
+    
+    evt.target.fire("changed");
+  })
+
+  canvas.on("mouse:over",function(evt){
+    
+    evt.target.fire("mouse:over");
+  })
+
+  canvas.on("mouse:out",function(evt){
+    
+    evt.target.fire("mouse:out");
+  })
+
+}
+
+function handle_zoom(e){
+    var target = canvas.findTarget(e);
+    //console.log(target)
+    if (target == undefined) return false;
+    if (target.lockScalingX)  return false;
+      var delta = e.originalEvent.wheelDelta / 600;
+      //alert ("zoom");
+      if (target) {
+          target.scaleX += delta;
+          target.scaleY += delta;
+          
+          // constrain
+          if (target.scaleX < 0.1) {
+              target.scaleX = 0.1;
+              target.scaleY = 0.1;
+          }
+          // constrain
+          if (target.scaleX > 40) {
+              target.scaleX = 40;
+              target.scaleY = 40;
+          }
+          target.setCoords();
+          target.fire("scaling")
+          target.fire("modified")
+          canvas.renderAll();
+          return false;
+      }
+}
+
+
+function choice(el){
+  el.on("mouse:move", function(){
+    alert("here "+el.text)
+  })
+
+  el.on("doubleclick", function(){
+    alert("dbl "+el.text)
+  })
+}
+
+
+
+  function update(el, i) {
+
+  
+
+  el.on("moving", function() {
+   //alert("moveit")
+    el.setCoords()
+    con[i].draw()
+  })
+
+  el.on("scaling", function() {
+    el.set({
+      strokeWidth: 3/el.scaleX
+    })
+    el.setCoords()
+    con[i].draw()
+  })
+
+
+//maybe
+  el.on("modified", function() {
+    if (el.type == "circle") {
+      //points = [el]
+      //pinit[el]={top: el.top-paper.top,  // -paper.height/2)*paper.scaleX-paper.top
+      //  left: el.left-paper.left}  //-paper.width/2)*paper.scaleX-paper.left
+    }
+    //console.log(i)
+    //alert("lore")
+    con[i].draw()
+  })
+
+  }
+
+
+function init() {
+  addListeners()
+
+
+
+  canvas = new fabric.Canvas('canvas',{lockScalingX: true});
+  enable_zoom()
+
+
+  canvas.setDimensions({width: document.documentElement.clientWidth,
+    height: document.documentElement.clientHeight})
+
+//new fabric.Color();
+
+/*
+paper = new fabric.Group()
+paper.set({
+  selectable:true,
+  lockUniScaling: true,
+  hasRotatingPoint: false,
+  hasBorders: false,
+  centeredScaling: true,
+  lockScalingX: false,
+  lockScalingY: false,
+  originX: "center",
+  originY: "center",
+})
+*/
+
+imgurl = "http://upload.wikimedia.org/wikipedia/commons/6/6f/Auricularis_superior.png";
+//imgurl = "image/subject.png";
+fabric.Image.fromURL(imgurl, function(mapimg1) {
+  //var mapimg1 = oImg;
+  mapimg1.set({
+    selectable: true,
+    left: mapimg1.width/2,
+    top: mapimg1.height/2,
+    lockUniScaling: true,
+    centeredScaling: true,
+  lockScalingX: false,
+  lockScalingY: false,
+    originX: "center",
+    originY: "center",
+    hasBorders: false,
+  hasRotatingPoint: false
+  }).setShadow('3px 3px 10px rgba(0,0,0,0.3)')
+  
+  canvas.add(mapimg1);
+  mapimg1.center()
+  mapimg1.sendToBack();
+  
+  
+  
+  //imagine = oImg;
+  //console.log(mapimg)
+  canvas.renderAll()
+  mapimg1.setCoords();
+  //canvas.renderTop()
+  //alert("oooo")
+  updatePaper(mapimg1)
+  //alert("oooo")
+  mapimg1.fire("modified")
+
+  //return mapimg1
+
+});
+
+//console.log(mapimg1)
+
+  
+var lastTime;
+  canvas.on("mouse:down",function(evt){
+    //alert("hi")
+    var date = new Date();
+    var now = date.getTime();
+    if(now - lastTime < 500){
+        objectDoubleClickHandler(evt);
+    }
+    lastTime = now;
+  })
+
+
+
+  function updatePaper(el) {
+
+  el.on("moving", function() {
+    //alert("lore")
+    deltax = el.left-el.width/2 - init_pos.x;
+    deltay = el.top-el.height/2 - init_pos.y;
+    deltas = el.scaleX/init_pos.s
+    init_pos.x = el.left-el.width/2;
+    init_pos.y = el.top-el.height/2;
+    init_pos.s = el.scaleX;
+    for(item in points) {
+      //console.log(item)
+      //points[item].scale(points[item].scale*el.scaleX)
+      //alert("move")
+      points[item].set({
+        strokeWidth: 3/(points[item].scale*el.scaleX),
+        left: points[item].left+deltax, //  el.width/2*
+        top: points[item].top+deltay,
+        scaleX: points[item].scaleX*deltas,
+        scaleY: points[item].scaleY*deltas,
+      }).setCoords();
+      
+      points[item].fire("modified")
+    }
+    canvas.renderAll(true)
+  })
+//scalinglore
+
+  el.on("scaling", function() {
+    /* CT:
+    for(item in points) {
+      points[item].scale(el.scaleX)
+      points[item].set({
+        strokeWidth: 3/el.scaleX,
+        left: (pinit[points[item]].left-el.width/2)*el.scaleX+el.left,  //+el.left
+        top: (pinit[points[item]].top-el.height/2)*el.scaleX+el.top  //+el.top
+      })
+      //points[item].fire("scaling")
+    }*/
+    //alert("scaling")
+    deltas = el.scaleX/init_pos.s;
+    init_pos.s = el.scaleX;
+    for(item in points) {
+    	var xval;
+    	var yval;
+    	if(el.left > points[item].left) {
+    		xval = el.left - ((el.left - points[item].left) * deltas);
+    	} else {
+    		xval = el.left + ((points[item].left - el.left) * deltas);
+    	}
+    	if(el.top > points[item].top) {
+    		yval = el.top - ((el.top - points[item].top) * deltas);
+    	} else {
+    		yval = el.top + ((points[item].top - el.top) * deltas);
+    	}
+      		points[item].set({
+        		strokeWidth: 3/(points[item].scale * el.scaleX),
+        		left: xval, 
+        		top: yval,
+        		scaleX: points[item].scaleX*deltas,
+        		scaleY: points[item].scaleY*deltas,
+      		}).setCoords();
+      	points[item].fire("scaling")	
+    }
+    canvas.renderAll(true)
+
+    //con.draw()
+  })
+
+//maybe!
+  el.on("modified", function() {
+    //alert("fd")
+    //console.log(el.left-el.width/2)
+    deltax = el.left-el.width/2 - init_pos.x;
+    deltay = el.top-el.height/2 - init_pos.y;
+    deltas = el.scaleX/init_pos.s
+    init_pos.x = el.left-el.width/2;
+    init_pos.y = el.top-el.height/2;
+    init_pos.s = el.scaleX;
+    for(item in points) {
+      //console.log(item)
+      //points[item].scale(points[item].scale*el.scaleX)
+      //alert("points?624")
+      points[item].set({
+        strokeWidth: 3/(points[item].scale*el.scaleX),
+        left: points[item].left+deltax, //  el.width/2*
+        top: points[item].top+deltay,
+        scaleX: points[item].scaleX*deltas,
+        scaleY: points[item].scaleY*deltas,
+      }).setCoords();
+      
+      points[item].fire("modified")
+    }
+    canvas.renderAll(true)
+    //con.draw()
+  })
+
+  el.on("mouse:over", function(){
+    console.log("im")
+  })
+
+  el.on("mouse:out", function(){
+    console.log("im2")
+  })
+
+  }
+
+
+
+  //paper.add(icon);
+
+var itext = new fabric.IText("Some editable title",{
+    fontFamily: 'sans-serif',
+    fontWeight: "bold",
+    fontSize: 30,
+    left: canvas.width/2,
+    top: 25,
+    fill: "#000",
+    hasRotatingPoint: false,
+    lockUniScaling: true,
+    minScaleLimit: 0.4,
+    hasBorders: false,
+    flipX: false,
+    flipY: false,
+    textAlign: "left",
+    centeredScaling: true,
+    cornerSize:20,
+    originX: "center",
+    originY: "center",
+  })
+
+canvas.add(itext)
+
+choice(itext)
+  
+  //canvas.sendToBack(icon2);
+
+//<svg width="30" height="30" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"> </svg>
+
+
+//$('#canvas').bind('mousewheel', function(event, delta, deltaX, deltaY) {
+//    console.log(delta, deltaX, deltaY); });
+    
+
+
+//console.log(icon2)
+//icon2.set({ left: 200, top: 200 })
+//canvas.add(path); //.set({ left: 100, top: 200 })
+
+
+function objectDoubleClickHandler(event){
+    console.log(event.target);
+}
+
+//canvas.add(co);
+
+//http://www.youtube.com/embed/THvUDMafwkU?autoplay=1&loop=1
+
+//http://www.screenr.com/embed/q3dH
+//http://sliced.ro/smp/nav2d.php#0.621/-193.426/-246.482
+//http://sliced.ro/smp/nav3d.php
+
+addPlacemark(200, 300, "Foo")
+addPlacemark(250, 350, "Bar")
+addPlacemark(150, 350, "Who knows..")
+addPlacemark(150, 150, "Baz")
+addPlacemark(50, 50, "alt", "http://upload.wikimedia.org/wikipedia/commons/6/6f/Auricularis_superior.png")
+
+}
+
+var con =[];
+var labels = [];
+var ndx1 = ndx2 = 0;
+var mapimg,points=[],pinit=[];
+var canvas;
+var top1 =15;
+var init_pos = {x:0, y:0, s:1};
+
+function addPlacemark(x, y, label, imgurl){
+  var color=get_color().toHex()
+  var icon = new fabric.Circle({
+    left: x,
+    top:y,
+    radius: 15,
+    strokeWidth: 2,
+    hasRotatingPoint: false,
+      lockUniScaling: true,
+      centeredScaling: true,
+      originX: "center",
+      originY: "center",
+    selectable: true,
+    stroke: color,
+    fill: "none",
+    opacity: 0.5,
+    strokeOpacity: 0,
+      hasBorders: false,
+  });
+  //alert "zoom";
+  points[ndx1] = icon;
+  console.log("ndx1"+ndx1)
+  ndx1=ndx1+1;
+
+  var icon2;
+  if (!imgurl) {
+    icon2 = showFramedText(label);
+  } else {
+    showFramedImage(icon, label, imgurl);
+    return;
+  }
+
+  labels[ndx2] = icon2;
+
+
+  con[ndx1] = new Connection(canvas,icon2,icon,{directed:true, label:" ", stroke: color});
+  //con[ndx]= con[ndx-1]
+
+  canvas.add(icon);
+  icon.bringToFront()
+
+  //points = [icon]
+  //var pinit=[]
+  //pinit[icon]={top: icon.top-paper.top, left:icon.left-paper.left}
+
+//showText(desc)
+
+  update(icon, ndx1)
+  update(icon2, ndx1)
+  ndx2=ndx2+1;
+
+
+}
+
+
+</script>
+</head>
+<body onload="init()" noscroll>
+  <div id="all">
+<canvas id="canvas" style="margin:auto;"></canvas>
+</div>
+<div id="textfield">
+<input type="text" name="q" id="query" autocomplete="off" >
+</div>
+<div id="include" class="dynDiv_moveDiv"  style="overflow: hidden;text-align:center;"> &nbsp; &nbsp; &nbsp; sliced.ro
+  <div class="dynDiv_moveParentDiv"><a href="#" onclick="showQR('fr1')" >QR</a></div>
+  <div class="dynDiv_resizeDiv_br"></div> <img  style="float:left;position:left:0px;top:15px;absolute;margin:auto;"" id="qr" src="tp.png" onclick="hideQR()">
+  <iframe src="http://www.screenr.com/embed/q3dH" id ="fr1" width="100%" height="95%"  frameBorder="0" />
+</div>
+<textarea>Your content here.</textarea>
+
+</body>
+
+</html>
