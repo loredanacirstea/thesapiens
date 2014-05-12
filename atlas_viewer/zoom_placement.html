@@ -80,7 +80,7 @@ iframe {
 
 <script type="text/javascript">
 
-
+// to be made in jQuery for compatibility
 window.onresize = function(event) {
   canvas.setDimensions({width: document.documentElement.clientWidth,
     height: document.documentElement.clientHeight})
@@ -280,7 +280,7 @@ fabric.Image.fromURL(imgurl, function(mapimg1) {
 
   choice(mapimg1)
 
-  con[ndx1] = new Connection(canvas,mapimg1,icon,{directed:true, label:" ", stroke: "black"});
+  con[ndx1] = new Connection(canvas,mapimg1,icon,{directed:true, label:" ", stroke: "black", perPixelTargetFind:true});
   //con[ndx]= con[ndx-1]
 
   canvas.add(icon);
@@ -412,13 +412,39 @@ function enable_zoom() {
 
 }
 
+function pointer_zoom(e, target, delta) {
+        var pointer = canvas.getPointer(e);
+        var difx, dify, signx, signy;
+        if(target.left >= pointer.x) {
+        	difx = target.left - pointer.x;
+        	signx = 1;
+        } else {
+        	difx = pointer.x - target.left;
+        	signx = -1;
+        }
+        if(target.top >= pointer.y) {
+        	dify = target.top - pointer.y;
+        	signy = 1;
+        } else {
+        	dify = pointer.y - target.top;
+        	signy = -1;
+        }
+        //console.info(delta, target.left, pointer.x, difx)
+        target.left += signx * delta * difx;
+        target.top += signy * delta * dify;
+        target.setCoords();
+        target.fire("moving");
+        target.fire("modified");
+}
+//getPointer(e) canvas.renderAll(allOnTop)
 function handle_zoom(e){
     var target = canvas.findTarget(e);
+    //alert (target.left);
+    //var init_scaleX = target.scaleX;
     //console.log(target)
     if (target == undefined) return false;
     if (target.lockScalingX)  return false;
       var delta = e.originalEvent.wheelDelta / 600;
-      //alert ("zoom");
       if (target) {
           target.scaleX += delta;
           target.scaleY += delta;
@@ -433,14 +459,15 @@ function handle_zoom(e){
               target.scaleX = 40;
               target.scaleY = 40;
           }
+          //target.setCoords();
           target.setCoords();
-          target.fire("scaling")
-          target.fire("modified")
+          target.fire("scaling");
+          target.fire("modified");
+          pointer_zoom(e, target, delta);
           canvas.renderAll();
           return false;
       }
 }
-
 
 function choice(el){
   el.on("mouse:move", function(){
@@ -738,7 +765,10 @@ addPlacemark(250, 350, "Bar")
 addPlacemark(150, 350, "Who knows..")
 addPlacemark(150, 150, "Baz")
 addPlacemark(50, 50, "alt", "http://upload.wikimedia.org/wikipedia/commons/6/6f/Auricularis_superior.png")
-
+//canvas.renderAll(true)
+//canvas.calcOffset()
+//canvas.renderTop()
+//canvas.controlsAboveOverlay = true;
 }
 
 var con =[];
