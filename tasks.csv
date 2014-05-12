@@ -1,0 +1,7 @@
+id,parent_id,title,text,type,task_url,initial_hints,skills,level,effort,deadline
+5,0,atlas viewer,Application for viewing mapped and indexed images. Tasks and chalenges follow.,programming,,,javascript ; geometry ; oop,8,8,
+1,5,histology zoom on atlas,Put histo image as placemark(see chalenge 1) and as label. Enter in zoom application by double clicking the label - zoom in the placemark.,programming,http://thesapiens.ro/labs/visual_refs.html, Use Fabricjs documentation from: http://fabricjs.com/docs/ and other sources.,javascript ; geometry,4,4,5/15/2014
+2,0,public documentation source,Create public documentation source for all of The Sapiens materials.,management,,,management ; organisation,2,3,5/11/2014
+3,5,mini map,"Make a mini map in the down-right corner. If image outside canvas, mini-map shows rectangle outside canvas rectangle. If n images outside canvas, mini-map shows n rectangles outside canvas and mini-map has max coords (n imag+ canvas).",programming,http://thesapiens.ro/labs/visual_refs.html,,javascript,4,4,
+4,5,align labels,align right/left labels and make the connections thicker and semi-transparent ; delete labels from images that are not in view,programming,http://thesapiens.ro/labs/visual_refs.html,,javascript,2,2,
+6,5,zoom relative to mouse,"First: zoom on center, then replace with mouse coordinates ; placemarks will be relative to that also",programming,http://thesapiens.ro/labs/visual_refs.html,,javascript,3,3,
