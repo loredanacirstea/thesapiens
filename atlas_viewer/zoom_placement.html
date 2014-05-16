@@ -280,7 +280,7 @@ fabric.Image.fromURL(imgurl, function(mapimg1) {
 
   choice(mapimg1)
 
-  con[ndx1] = new Connection(canvas,mapimg1,icon,{directed:true, label:" ", stroke: "black", perPixelTargetFind:true});
+  con[ndx1] = new Connection(canvas,mapimg1,icon,{directed:true, label:" ", stroke: "black", strokeWidth: 2});
   //con[ndx]= con[ndx-1]
 
   canvas.add(icon);
@@ -464,6 +464,7 @@ function handle_zoom(e){
           target.fire("scaling");
           target.fire("modified");
           pointer_zoom(e, target, delta);
+          //scaleUnit(unit, target.scaleX);
           canvas.renderAll();
           return false;
       }
@@ -624,7 +625,6 @@ var lastTime;
     }
     canvas.renderAll(true)
   })
-//scalinglore
 
   el.on("scaling", function() {
     /* CT:
@@ -662,6 +662,7 @@ var lastTime;
       		}).setCoords();
       	points[item].fire("scaling")	
     }
+    scaleUnit(el.scaleX);
     canvas.renderAll(true)
 
     //con.draw()
@@ -765,6 +766,11 @@ addPlacemark(250, 350, "Bar")
 addPlacemark(150, 350, "Who knows..")
 addPlacemark(150, 150, "Baz")
 addPlacemark(50, 50, "alt", "http://upload.wikimedia.org/wikipedia/commons/6/6f/Auricularis_superior.png")
+unit = makeUnit();
+unitPath = unit.unitt();
+canvas.add(unitPath);
+canvas.add(unit.units);
+//groupUnit();
 //canvas.renderAll(true)
 //canvas.calcOffset()
 //canvas.renderTop()
@@ -778,6 +784,8 @@ var mapimg,points=[],pinit=[];
 var canvas;
 var top1 =15;
 var init_pos = {x:0, y:0, s:1};
+var unit;
+var unitPath;
 
 function addPlacemark(x, y, label, imgurl){
   var color=get_color().toHex()
@@ -814,7 +822,7 @@ function addPlacemark(x, y, label, imgurl){
   labels[ndx2] = icon2;
 
 
-  con[ndx1] = new Connection(canvas,icon2,icon,{directed:true, label:" ", stroke: color});
+  con[ndx1] = new Connection(canvas,icon2,icon,{directed:true, label:" ", stroke: color, strokeWidth: 2});
   //con[ndx]= con[ndx-1]
 
   canvas.add(icon);
@@ -832,7 +840,78 @@ function addPlacemark(x, y, label, imgurl){
 
 
 }
-
+function groupUnit(){
+	var text = unitText(unit.units);
+	var group = new fabric.Group ([unitPath, text]);
+	canvas.add(group);
+}
+function unitText(text, x, y){
+  var text2 = new fabric.Text(text, {
+    fontFamily: 'sans-serif',
+    fontSize: 14,
+    left: x,
+    top: y - 20,
+    fill: "#000",
+    hasRotatingPoint: false,
+    lockScalingX: true, lockScalingY: true,
+    minScaleLimit: 0.4,
+    flipX: false,
+    flipY: false,
+    cornerSize:30,
+    originX: "center",
+    originY: "center",
+    selectable:false
+  })
+  return text2;
+}
+function scaleUnit(scale) {
+	//console.info("yes")
+	canvas.remove(unitPath);
+	canvas.remove(unit.units);
+	if(unit.ini * scale > document.documentElement.clientWidth/2) {
+		unit.ini /= 10;
+	}
+	if(unit.ini * scale < document.documentElement.clientWidth/20) {
+		unit.ini *= 10;
+	}
+	unit.scale = scale;
+	unitPath = unit.unitt();
+	canvas.add(unitPath);
+	unit.reUnits();
+	canvas.add(unit.units);
+	//groupUnit();
+}
+function makeUnit(scale, ini, units) {
+//10*putere
+	//console.info("yes")
+	if (typeof(scale) === "undefined") { scale = 1; }
+    if (typeof(ini) === "undefined") { ini = 100; }
+    if (typeof(units) === "undefined") { units = "px"; }
+	var un = { scale: scale,
+		ini: ini, end: 3,
+		p4x: canvas.width/2, p4y: canvas.height - 10,
+		units: unitText(ini+units, canvas.width/2, canvas.height - 10),
+		reUnits: function(){this.units = unitText(this.ini+units, canvas.width/2, canvas.height - 10)},
+		makePath: function() {return "M" + (this.p4x - (this.ini * this.scale/2) - this.end) + "," + 
+			(this.p4y - (3 * this.end)) + "L" + 
+			(this.p4x - (this.ini * this.scale/2) - this.end) + "," + this.p4y + "L" + 
+			(this.p4x - (this.ini * this.scale/2)) + "," + this.p4y + "L" + 
+			this.p4x + "," + this.p4y + "L" + 
+			this.p4x + "," + this.p4y + "L" + 
+			(this.p4x + (this.ini * this.scale/2) + this.end) + "," + this.p4y + "L" + 
+			(this.p4x + (this.ini * this.scale/2) + this.end) + "," + (this.p4y - (3 * this.end)) + "L" +
+			(this.p4x + (this.ini * this.scale/2)) + "," + (this.p4y - (3 * this.end)) + "L" + 
+			(this.p4x + (this.ini * this.scale/2)) + "," + (this.p4y - this.end) + "L" + 
+			(this.p4x - (this.ini * this.scale/2)) + "," + (this.p4y - this.end) + "L" + 
+			(this.p4x - (this.ini * this.scale/2)) + "," + (this.p4y - (3 * this.end)) + "z"},
+		unitt: function() { var path = new fabric.Path(this.makePath())
+              .set({ lockScalingX: true, lockScalingY: true, perPixelTargetFind:true,
+                 fill: "#000", selectable:false,opacity:.5, originX: "center",originY: "center"});
+                return path;
+                }
+	}
+	return un;
+}	
 
 </script>
 </head>
