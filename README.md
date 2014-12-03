@@ -1,7 +1,7 @@
 thesapiens
 ==========
 
-Repository of http://thesapiens.ro, a volunteer-based group aiming to create a software universe of integrated solutions to our core problems.
+Test tasks for TheSapiens - volunteer-based group aiming to create an SVG universe: http://thesapiens.ro
 
 License
 ==========
